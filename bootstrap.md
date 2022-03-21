@@ -15,6 +15,8 @@ To set up AKS, we are using terraform.
 ...
 
 ```shell
+terraform init
+
 # Set the service principle to use via environment
 export TF_VAR_service_principal_client_id=<sp client id>
 export TF_VAR_service_principal_client_secret=<sp client secret>
