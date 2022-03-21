@@ -15,3 +15,11 @@ module "aks" {
   aks_service_principal_client_secret = var.service_principal_client_secret
   aks_dns_prefix                      = "cx-${var.environment_name}-aks"
 }
+
+module "public_ip" {
+  source = "./modules/03_public_ip"
+
+  public_ip_name      = "cx-${var.environment_name}-public-ip"
+  resource_location   = module.resource_group.resource_location
+  resource_group_name = module.resource_group.resource_group_name
+}
