@@ -33,4 +33,10 @@ variable "aks_service_principal_client_id" {
 
 variable "aks_service_principal_client_secret" {
   description = "USE TF_VAR_service_principal_client_secret! The secret of the service principal that will be used to create the AKS cluster."
+  type = string
+}
+
+variable "aks_dns_prefix" {
+  description = "The DNS prefix used for the AKS cluster"
+  type = string
 }

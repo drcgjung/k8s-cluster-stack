@@ -12,7 +12,16 @@ After completing these steps the following resources will be created:
 
 To set up AKS, we are using terraform.
 
-...
+
+### Create a service principal
+
+To set up the AKS cluster, we need an Azure Service Principal Account. You can create it like follows:
+
+```shell
+# Follow login instructions in your browser
+az login --tenant catenax.onmicrosoft.com
+az ad sp create-for-rbac --skip-assignment
+```
 
 ```shell
 terraform init
@@ -20,6 +29,8 @@ terraform init
 # Set the service principle to use via environment
 export TF_VAR_service_principal_client_id=<sp client id>
 export TF_VAR_service_principal_client_secret=<sp client secret>
+
+terraform plan -var-file=environments/<environment>.tfvars -out <environment>.plan
 ```
 
 
