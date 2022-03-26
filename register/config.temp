@@ -1,0 +1,8 @@
+{
+  "tlsClientConfig": {
+    "insecure": false,
+    "certData": "$CERTDATA",
+    "keyData":  "$KEYDATA",
+    "caData":   "$CADATA"
+  }
+}

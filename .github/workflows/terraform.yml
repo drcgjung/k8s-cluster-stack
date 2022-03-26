@@ -137,33 +137,47 @@ jobs:
 
   registercluster:
     needs: createK8sResources
-    name: Register cluster with central argocd
+    name: Register cluster in central argocd
     runs-on: ubuntu-latest
     steps:
 
-      - name: "Login to Azure"
-        uses: azure/login@v1
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
-
-      - name: "Login to central ArgoCD"
-        run: |
-          curl -sSL -o ./argocd https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
-          chmod +x ./argocd
-          ./argocd login ${{secrets.CENTRAL_ARGOCD_FQDN}} \
-          --username ${{secrets.CENTRAL_ARGOCD_USER}} \
-          --password ${{secrets.CENTRAL_ARGOCD_PASSWORD}}
-      - name: "Add target cluster"
-        run: |
-          az aks get-credentials \
-          --resource-group ${{env.prefix}}-${{github.event.inputs.clustername}}-rg \
-          --name ${{env.prefix}}-${{github.event.inputs.clustername}}-aks-services \
-          --file ./${{env.prefix}}-${{github.event.inputs.clustername}}-admin \
-          --admin
-          CONTEXTNAME=$(kubectl --kubeconfig=./${{env.prefix}}-${{github.event.inputs.clustername}}-admin config get-contexts -o name)
-          if (./argocd cluster list --grpc-web | grep ${{env.prefix}}-${{github.event.inputs.clustername}}-aks-services-admin)
-          then
-            echo "${{env.prefix}}-${{github.event.inputs.clustername}}-aks-services is already registered in the central ArgoCD"
-          else
-            ./argocd cluster add $CONTEXTNAME --kubeconfig ./${{env.prefix}}-${{github.event.inputs.clustername}}-admin
-          fi
+    # get the latest sources
+    - name: Checkout
+      uses: actions/checkout@v2
+    #- name: "Login to Azure"
+    #  uses: azure/login@v1
+    #  with:
+    #    creds: ${{ secrets.AZURE_CREDENTIALS }}
+    - name: "Set kubecontext (destination)"
+      uses: azure/aks-set-context@v1
+      with:
+        creds: '${{ secrets.AZURE_CREDENTIALS }}'
+        resource-group: '${{env.prefix}}-${{github.event.inputs.workspace}}-rg'
+        cluster-name: '${{env.prefix}}-${{github.event.inputs.workspace}}-aks-services'
+    - name: "Create serviceaccount"
+      working-directory: register
+      run: |
+        kubectl apply -f serviceaccount.yaml
+        kubectl apply -f clusterrole.yaml
+        kubectl apply -f clusterrolebinding.yaml
+    - name: "Set variables"
+      working-directory: register
+      run: |
+        export SECRETNAME=$(kubectl -n kube-system get serviceaccount argocd-manager -o jsonpath={'.secrets[0].name'})
+        export CADATA=$(kubectl -n kube-system get secret $SECRETNAME -o "jsonpath={.data.ca\.crt}")
+        export KEYDATA=$(kubectl -n kube-system get secret tunnelfront-tls -o "jsonpath={.data.client\.key}")
+        export CERTDATA=$(kubectl -n kube-system get secret tunnelfront-tls -o "jsonpath={.data.client\.pem}")
+        export CONTEXTNAME=$(kubectl config view -o 'jsonpath={.contexts[0].name}' | base64 -w0)
+        export CLUSTERSERVER=$(kubectl config view -o 'jsonpath={.clusters[0].cluster.server}' | base64 -w0)
+        export CLUSTERCONFIG=$(cat config.temp | envsubst | base64 -w0)
+    - name: "Set kubecontext (central argocd)"
+      uses: azure/aks-set-context@v1
+      with:
+        creds: '${{ secrets.AZURE_CREDENTIALS }}'
+        resource-group: 'cxtsi-hotel-budapest-rg'
+        cluster-name: 'cxtsi-hotel-budapest-aks-services'
+    - name: "Create registration"
+      working-directory: register
+      run: |
+        cat registration.temp | envsubst > registration.yaml
+        kubectl apply -f registration.yaml

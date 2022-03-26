@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Secret
+type: Opaque
+metadata:
+  annotations:
+    managed-by: argocd.argoproj.io
+  labels:
+    argocd.argoproj.io/secret-type: cluster
+  name: $SECRETNAME
+  namespace: argocd
+data:
+  name: $CONTEXTNAME
+  server: $CLUSTERSERVER
+  config: $CLUSTERCONFIG
