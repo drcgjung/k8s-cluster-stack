@@ -1,3 +1,5 @@
 .idea
 .vscode
+**/charts/*.tgz
+**/Chart.lock
 environment/core/secrets/
