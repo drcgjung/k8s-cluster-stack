@@ -184,6 +184,7 @@ jobs:
 
   vault-deploy:
     name: Deploy Vault
+    needs: registercluster
     if: ${{github.event.inputs.clustername}} == "vault"
     runs-on: ubuntu-latest
     env:
