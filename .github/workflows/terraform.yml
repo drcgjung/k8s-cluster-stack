@@ -10,7 +10,7 @@ on:
         default: ''
 
 env:
-  prefix: cxtsi
+  prefix: cx
 
 jobs:
   createK8sResources:
@@ -181,3 +181,54 @@ jobs:
       run: |
         cat registration.temp | envsubst > registration.yaml
         kubectl apply -f registration.yaml
+
+  vault-deploy:
+    name: Deploy Vault
+    if: ${{github.event.inputs.clustername}} == "vault"
+    runs-on: ubuntu-latest
+    env:
+      CONFIGTOML: ${{secrets.CONFIGTOML}}
+    steps:
+
+      - name: Checkout repository
+        uses: actions/checkout@v1
+
+      - name: Login to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{secrets.AZURE_CREDENTIALS }}
+
+      - name: Kubernetes Login (vault)
+        uses: azure/aks-set-context@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+          resource-group: ${{env.prefix}}-${{github.event.inputs.clustername}}-rg
+          cluster-name: ${{env.prefix}}-${{github.event.inputs.clustername}}-aks-services
+      
+      - name: Prepare unseal
+        working-directory: vault/unseal
+        run: |
+          cat configtoml.temp | envsubst >> configtoml.yaml
+          kubectl apply -f configtoml.yaml
+
+      - name: Kubernetes Login (central)
+        uses: azure/aks-set-context@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+          resource-group: cxtsi-hotel-budapest-rg
+          cluster-name: cxtsi-hotel-budapest-aks-services
+      
+      - name: Deploy Vault
+        working-directory: vault/chart
+        run: |
+          helm upgrade vault . \
+          --namespace argocd \
+          --install \
+          --wait \
+          --atomic \
+          --set vault.seal.tenantid=${{secrets.AZURE_TENANT_ID}} \
+          --set vault.seal.clientid=${{secrets.AZURE_AD_CLIENT_ID}} \
+          --set vault.seal.clientsecret=${{secrets.AZURE_AD_CLIENT_SECRET}} \
+          --set vault.seal.azurevaultname=${{secrets.AZUREVAULTNAME}} \
+          --set vault.seal.azurevaultkeyname=${{secrets.AZUREVAULTKEYNAME}} \
+          --set vault.seal.subscriptionid=${{secrets.AZURE_SUBSCRIPTION_ID}}

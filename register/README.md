@@ -13,6 +13,6 @@
   - tunnelfront-tls
     (contains client.key client.pem )
 
-## Create a secret on the argo cluster
+## On the argocd cluster create a secret:
 
   - register/registration.temp (register/config.temp will be used in the registration.yaml config)

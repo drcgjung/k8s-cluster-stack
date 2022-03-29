@@ -1,0 +1,9 @@
+apiVersion: v2
+name: vault
+description: Hashicorp vault HA deployment with ingress cert manager and sealed-secrets
+
+type: application
+
+version: 0.1.0
+
+appVersion: "0.1"

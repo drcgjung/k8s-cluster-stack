@@ -1,0 +1,42 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: {{.Values.certManager.name}}
+  namespace: argocd
+  labels:
+    app.kubernetes.io/managed-by: Helm
+  annotations:
+    meta.helm.sh/release-name: vault
+    meta.helm.sh/release-namespace: argocd
+spec:
+  project: {{.Values.project}}
+  source:
+    chart: cert-manager
+    helm:
+      values: |
+      {{- toYaml .Values.certManager.customvalues | nindent 8}}
+    repoURL: {{.Values.certManager.source.repourl}}
+    targetRevision: {{.Values.certManager.source.targetrevision}}
+
+  destination:
+    server: {{.Values.destination.server}}
+    namespace: {{.Values.certManager.destination.namespace}}
+
+  ignoreDifferences: # https://github.com/argoproj/argo-cd/issues/4276#issuecomment-908455476
+    - group: admissionregistration.k8s.io
+      kind: ValidatingWebhookConfiguration
+      name: cert-manager-webhook
+      jsonPointers:
+        - /webhooks/0/namespaceSelector/matchExpressions/2
+  syncPolicy:
+    automated: # automated sync by default retries failed attempts 5 times with following delays between attempts ( 5s, 10s, 20s, 40s, 80s ); retry controlled using `retry` field.
+      selfHeal: true # Specifies if partial app sync should be executed when resources are changed only in target Kubernetes cluster and no git change detected ( false by default ).
+      allowEmpty: false # Allows deleting all application resources during automatic syncing ( false by default ).
+    syncOptions:
+      - CreateNamespace=true
+    retry:
+      limit: 5 # number of failed sync attempt retries; unlimited number of attempts if less than 0
+      backoff:
+        duration: 5s # the amount to back off. Default unit is seconds, but could also be a duration (e.g. "2m", "1h")
+        factor: 2 # a factor to multiply the base duration after each failed retry
+        maxDuration: 3m # the maximum amount of time allowed for the backoff strategy
