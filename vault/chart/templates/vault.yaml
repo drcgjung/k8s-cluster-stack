@@ -20,7 +20,7 @@ spec:
         - name: server.ha.raft.enabled
           value: 'true'
         - name: server.ha.raft.config
-          value: |-
+          value: |
             ui = true
             listener "tcp" {
               tls_disable = 1
@@ -41,7 +41,7 @@ spec:
               subscription_id = {{.Values.vault.seal.subscriptionid}}
             }
         - name: server.ha.config
-          value: |-
+          value: |
             ui = true
             listener "tcp" {
               tls_disable = 1

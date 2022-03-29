@@ -9,7 +9,7 @@ certManager:
     namespace: cert-manager
   source:
     repourl: https://charts.jetstack.io
-    targetrevision: 1.7.1
+    targetrevision: 1.7.2
   customvalues:
     installCRDs: true
 
