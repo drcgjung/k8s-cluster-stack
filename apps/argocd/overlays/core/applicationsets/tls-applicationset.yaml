@@ -1,48 +1,43 @@
 apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
 metadata:
-  name: ingress-nginx-applicationset
+  name: tls-applicationset
 spec:
   generators:
-  - list:
-      elements:
-      - cluster: core
-        cluster-name: in-cluster
-        targetRevision: HEAD
-#      - cluster: example
-#        cluster-name: example-cluster
-#        targetRevision: HEAD
+    - list:
+        elements:
+          - cluster: core
+            cluster-name: in-cluster
+            targetRevision: HEAD
+  #      - cluster: example
+  #        cluster-name: example-cluster
+  #        targetRevision: HEAD
 
   template:
     metadata:
-      name: '{{ cluster }}-ingress-nginx'
+      name: '{{ cluster }}-tls'
       labels:
-        app: ingress-nginx
+        app: tls
     spec:
       project: default
       source:
         helm:
           valueFiles:
-            - values-ingress.yaml
+            - values-tls.yaml
         repoURL: https://github.com/catenax-ng/k8s-cluster-stack
         targetRevision: '{{ targetRevision }}'
-        path: apps/ingress-nginx
+        path: apps/tls
 
       destination:
         name: '{{ cluster-name }}'
-        namespace: default
+        namespace: tls
         server: ''
 
       # Sync policy
       syncPolicy:
-        # disabled autoSync with A1ODT-461 to avoid accidental damage to Hotel Budapest
-#        automated: # automated sync by default retries failed attempts 5 times with following delays between attempts ( 5s, 10s, 20s, 40s, 80s ); retry controlled using `retry` field.
-#          prune: true # Specifies if resources should be pruned during auto-syncing ( false by default ).
-#          selfHeal: true # Specifies if partial app sync should be executed when resources are changed only in target Kubernetes cluster and no git change detected ( false by default ).
-#          allowEmpty: false # Allows deleting all application resources during automatic syncing ( false by default ).
         syncOptions: # Sync options which modifies sync behavior
           - Validate=false # disables resource validation (equivalent to 'kubectl apply --validate=false') ( true by default ).
-          - CreateNamespace=false # Namespace Auto-Creation ensures that namespace specified as the application destination exists in the destination cluster.
+          - CreateNamespace=true # Namespace Auto-Creation ensures that namespace specified as the application destination exists in the destination cluster.
           - PrunePropagationPolicy=foreground # Supported policies are background, foreground and orphan.
           - PruneLast=true # Allow the ability for resource pruning to happen as a final, implicit wave of a sync operation
         # The retry feature is available since v1.7
@@ -52,3 +47,4 @@ spec:
             duration: 5s # the amount to back off. Default unit is seconds, but could also be a duration (e.g. "2m", "1h")
             factor: 2 # a factor to multiply the base duration after each failed retry
             maxDuration: 3m # the maximum amount of time allowed for the backoff strategy
+
