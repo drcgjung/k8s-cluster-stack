@@ -9,5 +9,3 @@ issuer:
     clientSecretSecretRef:
       key: "client-secret"
       name: "azuredns-config"
-certificate:
-  dnsZone: "core.demo.catena-x.net"

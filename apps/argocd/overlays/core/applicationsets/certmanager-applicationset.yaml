@@ -9,9 +9,9 @@ spec:
       - cluster: core
         cluster-name: in-cluster
         targetRevision: HEAD
-#      - cluster: example
-#        cluster-name: example-cluster
-#        targetRevision: HEAD
+      - cluster: vault
+        cluster-name: vault-cluster
+        targetRevision: HEAD
 
   template:
     metadata:
