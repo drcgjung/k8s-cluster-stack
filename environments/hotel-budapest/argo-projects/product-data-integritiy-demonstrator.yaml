@@ -29,6 +29,5 @@ spec:
       description: All access to applications inside project-data-integrity-demonstrator. Read only on project itself
       policies:
         - p, proj:project-data-integrity-demonstrator:team-admin, applications, *, project-data-integrity-demonstrator/*, allow
-        - p, proj:project-data-integrity-demonstrator:team-admin, projects, get, project-data-integrity-demonstrator, allow
       groups:
-        - catenax-ng:product-data-integrity-demonstrator, role:team-admin
+        - catenax-ng:product-data-integrity-demonstrator
