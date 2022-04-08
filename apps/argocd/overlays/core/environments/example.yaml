@@ -1,0 +1,28 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: example-config
+  namespace: argocd
+  labels:
+    environment: example
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/catenax-ng/k8s-cluster-stack
+    targetRevision: HEAD
+    path: environments/example
+    plugin:
+      name: argocd-vault-plugin-kustomize
+      env:
+        - name: AVP_SECRET
+          value: devsecops-team-vault-secret
+
+  destination:
+    name: example-cluster
+    namespace: argocd
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+      allowEmpty: false

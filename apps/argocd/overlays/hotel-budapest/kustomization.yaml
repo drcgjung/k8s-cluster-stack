@@ -4,11 +4,6 @@ kind: Kustomization
 bases:
   - ../../base
 
-resources:
-  - environments/core.yaml
-#  - environments/hotel-budapest.yaml
-#  - environments/example.yaml
-
 patchesStrategicMerge:
   - configmap/argo-url.yaml
 

@@ -1,5 +1,11 @@
-resources:
-  - applicationsets/*.yaml
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
 
-patchesStrategicMerge:
-  - configmap/argo-url.yaml
+namespace: argocd
+
+resources:
+  - applicationsets/argo-applicationset.yaml
+  - cluster-secrets/hotel-budapest-secret.yaml
+# TODO 08.04.2022 CARSLEN: after vault cluster secret is available in vault, enable it here for deployment
+#  - cluster-secrets/vault-cluster-secret.yaml
+#  - cluster-secrets/example-cluster-secret.yaml

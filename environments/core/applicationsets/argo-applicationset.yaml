@@ -10,10 +10,17 @@ spec:
         cluster-name: in-cluster
         overlay: overlays/core
         targetRevision: HEAD
+        AVP_SECRET: devsecops-team-vault-secret
+#      - cluster: hotel-budapest
+#        cluster-name: hotel-budapest
+#        overlay: overlays/hotel-budapest
+#        targetRevision: HEAD
+#        AVP_SECRET: devsecops-team-vault-secret
 #      - cluster: example
-#        cluster-name: example-cluster
+#        cluster-name: example-cluster-test
 #        overlay: overlays/example
 #        targetRevision: HEAD
+#        AVP_SECRET: devsecops-team-vault-secret
 
   template:
     metadata:
@@ -26,6 +33,11 @@ spec:
         repoURL: https://github.com/catenax-ng/k8s-cluster-stack
         targetRevision: '{{ targetRevision }}'
         path: apps/argocd/{{overlay}}
+        plugin:
+          name: argocd-vault-plugin-kustomize
+          env:
+            - name: AVP_SECRET
+              value: '{{ AVP_SECRET }}'
       destination:
         name: '{{ cluster-name }}'
         namespace: argocd

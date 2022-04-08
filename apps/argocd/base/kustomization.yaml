@@ -4,8 +4,11 @@ namespace: argocd
 
 resources:
   - namespace.yaml
-  - https://raw.githubusercontent.com/argoproj/argo-cd/v2.3.2/manifests/ha/install.yaml
+  - https://raw.githubusercontent.com/argoproj/argo-cd/v2.3.3/manifests/ha/install.yaml
+  - rbac-secret-access.yaml # grant avp access to secret with AVP configuration
 
 patchesStrategicMerge:
   - argocd-rbac-cm.yaml
+  - plugins/argo-vault-plugin.yaml
+  - avp-argocd-cm.yaml
   - github-oauth-argocd-cm.yaml

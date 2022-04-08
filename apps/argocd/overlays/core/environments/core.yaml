@@ -1,19 +1,24 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: environment-hotel-budapest
+  name: core-config
   namespace: argocd
   labels:
-    environment: hotel-budapest
+    environment: core
 spec:
   project: default
   source:
     repoURL: https://github.com/catenax-ng/k8s-cluster-stack
     targetRevision: HEAD
-    path: environments/hotel-budapest
+    path: environments/core
+    plugin:
+      name: argocd-vault-plugin-kustomize
+      env:
+        - name: AVP_SECRET
+          value: devsecops-team-vault-secret
 
   destination:
-    name: hotel-budapest
+    name: in-cluster
     namespace: argocd
 
   syncPolicy:
