@@ -1,7 +1,7 @@
 ingress-nginx:
   controller:
     service:
-      loadBalancerIP: 20.113.44.254
+      loadBalancerIP: 20.113.19.82
     ingressClassResource:
       default: true
     watchIngressWithoutClass: true
