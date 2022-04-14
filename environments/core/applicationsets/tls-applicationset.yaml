@@ -16,7 +16,7 @@ spec:
             targetRevision: HEAD
           - cluster: hotel-budapest
             cluster-name: hotel-budapest
-            valueFile: values-tls-vault.yaml
+            valueFile: values-tls-hotel-budapest.yaml
             targetRevision: HEAD
 
   template:
