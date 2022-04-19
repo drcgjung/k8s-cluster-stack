@@ -25,8 +25,10 @@ spec:
       kind: NetworkPolicy
   roles:
     - name: team-admin
-      description: All access to applications inside project-bpdm. Read only on project itself
+      description: All access to applications inside product-team-example. Read only on project itself
       policies:
         - p, proj:product-team-example:team-admin, applications, *, product-team-example/*, allow
+        - p, proj:product-team-example:team-admin, repositories, get, *, allow
+        - p, proj:product-team-example:team-admin, clusters, get, *, allow
       groups:
         - catenax-ng:product-team-example
