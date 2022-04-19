@@ -9,4 +9,6 @@ data:
   scopes: '[groups, email]'
   policy.csv: |
     p, role:none, *, *, */*, deny
+    p, role:none, clusters, get, *, allow
+    p, role:none, repositories, get, *, allow
     g, catenax-ng:ArgoCDAdmins, role:admin
