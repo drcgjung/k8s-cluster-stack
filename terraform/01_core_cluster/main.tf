@@ -32,6 +32,6 @@ module "a_record" {
 
   record_name = "*.${var.environment_name}"
   target_resource_id = module.public_ip.id
-  resource_group_name = "cxtsi-demo-shared-rg"
-  zone_name = "demo.catena-x.net"
+  resource_group_name = "shared-services-rg"
+  zone_name = "pdm-cloud-connector.com"
 }
