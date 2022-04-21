@@ -27,13 +27,16 @@ spec:
     spec:
       project: default
       source:
-        helm:
-          valueFiles:
-            - values-certmanager.yaml
+        plugin:
+          name: argocd-vault-plugin-helm
+          env:
+            - name: AVP_SECRET
+              value: vault-secret
+            - name: helm_args
+              value: -f values.yaml
         repoURL: https://github.com/catenax-ng/k8s-cluster-stack
         targetRevision: '{{ targetRevision }}'
         path: apps/certmanager
-
       destination:
         name: '{{ cluster-name }}'
         namespace: cert-manager
