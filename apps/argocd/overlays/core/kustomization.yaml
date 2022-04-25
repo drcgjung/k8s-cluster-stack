@@ -5,9 +5,9 @@ bases:
   - ../../base
 
 resources:
-  - environments/core.yaml
-  - environments/dev.yaml
-  - environments/hotel-budapest.yaml
+#  - environments/core.yaml
+#  - environments/dev.yaml
+#  - environments/hotel-budapest.yaml
 #  - environments/example.yaml
   - ingress/ingress-argocd.yaml
 

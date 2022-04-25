@@ -10,6 +10,7 @@ module "aks" {
   aks_cluster_name   = "cx-${var.environment_name}-aks"
   aks_location       = module.resource_group.resource_location
   aks_resource_group = module.resource_group.resource_group_name
+  aks_node_resource_group = "cx-${var.environment_name}-nodes-rg"
 
   aks_service_principal_client_id     = var.service_principal_client_id
   aks_service_principal_client_secret = var.service_principal_client_secret
@@ -25,12 +26,13 @@ module "public_ip" {
   public_ip_name      = "cx-${var.environment_name}-public-ip"
   resource_location   = module.resource_group.resource_location
   resource_group_name = module.aks.node_resource_group
+  dns_prefix = "pdm-cloud-connector-${var.environment_name}"
 }
 
 module "a_record" {
   source = "../modules/a_record"
 
-  record_name = "*.${var.environment_name}"
+  record_name = "*.int"
   target_resource_id = module.public_ip.id
   resource_group_name = "shared-services-rg"
   zone_name = "pdm-cloud-connector.com"

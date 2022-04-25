@@ -3,6 +3,11 @@ variable "public_ip_name" {
   type        = string
 }
 
+variable "dns_prefix" {
+  description = "The dns prefix of the public IP resource"
+  type        = string
+}
+
 variable "resource_location" {
   description = "The Azure location for the public IP resource"
   type = string
